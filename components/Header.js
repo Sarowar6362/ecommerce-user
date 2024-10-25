@@ -70,16 +70,16 @@ export default function Header() {
     <StyledHeader>
       <Center>
         <Wrapper>
-          <Logo href={'/'}>Ecommerce</Logo>
+          <Logo href={'/'}>Grocery Shop</Logo>
           <StyledNav mobilenavactive={mobilenavactive}>
             <NavLink href={'/'}>Home</NavLink>
             <NavLink href={'/products'}>All products</NavLink>
             <NavLink href={'/categories'}>Categories</NavLink>
-             {/* 
-             <NavLink href={'/account'}>Account</NavLink>
+            
+             {/* <NavLink href={'/account'}>Account</NavLink> */}
             <NavLink href={'/cart'}>Cart ({cartProducts.length})</NavLink>
           
-             */} 
+           
              </StyledNav>
           <NavButton onClick={() => setMobileNavActive(prev => !prev)}>
             <BarsIcon />

@@ -1,41 +1,58 @@
 import Header from "@/components/Header";
 import Featured from "@/components/Featured";
 import Center from "@/components/Center";
-import SearchBar from "@/components/SearchBar"; // Import SearchBar
+import SearchBar from "@/components/SearchBar";
 import Title from "@/components/Title";
 import { Product } from "@/models/Product";
 import { mongooseConnect } from "@/lib/mongoose";
 import NewProducts from "@/components/NewProducts";
-import { useRouter } from "next/router"; // Import useRouter for navigation
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 
-export default function HomePage({ featuredProduct, newProducts }) {
-  const router = useRouter(); // Initialize useRouter
+export default function HomePage({ featuredProduct, initialProducts }) {
+  const router = useRouter();
+  const [products, setProducts] = useState(initialProducts);
+  const [page, setPage] = useState(1); // Current page
+  const itemsPerPage = 70;
 
   const handleSearch = async (query) => {
-    // Redirect to the products page with the search query
     router.push(`/products?title=${encodeURIComponent(query)}`);
+  };
+
+  const loadProducts = async (newPage) => {
+    const response = await fetch(`/api/products?page=${newPage}&limit=${itemsPerPage}`);
+    const data = await response.json();
+    setProducts(data.products);
+    setPage(newPage);
   };
 
   return (
     <div>
       <Header />
-      
       <Featured product={featuredProduct} />
-      <SearchBar onSearch={handleSearch} /> 
-      <NewProducts products={newProducts} />
+      <div style={{ marginTop: "20px" }}>
+        <SearchBar onSearch={(query) => handleSearch(query)} />
+      </div>
+      <NewProducts products={products} />
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+        {page > 1 && (
+          <button onClick={() => loadProducts(page - 1)}>Previous</button>
+        )}
+        <button onClick={() => loadProducts(page + 1)}>See More</button>
+      </div>
     </div>
   );
 }
 
 export async function getServerSideProps() {
-  const featuredProductId = '671931c6ab402f23be7b8070'; // Replace with your actual ID
+  const featuredProductId = '671b738ed01eda059118d201';
   await mongooseConnect();
   const featuredProduct = await Product.findById(featuredProductId);
-  const newProducts = await Product.find({}, null, { sort: { '_id': -1 }, limit: 10 });
+  const initialProducts = await Product.find({}, null, { sort: { '_id': -1 }, limit: 70 });
   return {
     props: {
       featuredProduct: JSON.parse(JSON.stringify(featuredProduct)),
-      newProducts: JSON.parse(JSON.stringify(newProducts)),
+      initialProducts: JSON.parse(JSON.stringify(initialProducts)),
     },
   };
 }

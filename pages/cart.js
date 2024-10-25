@@ -76,6 +76,7 @@ export default function CartPage() {
   const [streetAddress,setStreetAddress] = useState('');
   const [country,setCountry] = useState('');
   const [isSuccess,setIsSuccess] = useState(false);
+
   useEffect(() => {
     if (cartProducts.length > 0) {
       axios.post('/api/cart', {ids:cartProducts})
@@ -86,36 +87,48 @@ export default function CartPage() {
       setProducts([]);
     }
   }, [cartProducts]);
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    if (window?.location.href.includes('success')) {
-      setIsSuccess(true);
-      clearCart();
-    }
-  }, []);
+
   function moreOfThisProduct(id) {
     addProduct(id);
   }
   function lessOfThisProduct(id) {
     removeProduct(id);
   }
-  async function goToPayment() {
-    const response = await axios.post('/api/checkout', {
-      name,email,city,postalCode,streetAddress,country,
-      cartProducts,
-    });
-    if (response.data.url) {
-      window.location = response.data.url;
+
+  // Updated `submitOrder` function
+  async function submitOrder() {
+    try {
+      const response = await axios.post('/api/orders', {
+        name,
+        email,
+        city,
+        postalCode,
+        streetAddress,
+        country,
+        line_items: products.map(product => ({
+          product_id: product._id,
+          title: product.title, //title changed here
+          quantity: cartProducts.filter(id => id === product._id).length,
+        })),
+        paid: false // Since we're not including a payment method
+      });
+      
+      if (response.status === 201) {
+        setIsSuccess(true);
+        clearCart();
+      }
+    } catch (error) {
+      console.error("Failed to submit order:", error);
     }
   }
+
   let total = 0;
   for (const productId of cartProducts) {
     const price = products.find(p => p._id === productId)?.price || 0;
     total += price;
   }
 
+  // Display a thank-you message if order submission is successful
   if (isSuccess) {
     return (
       <>
@@ -124,13 +137,14 @@ export default function CartPage() {
           <ColumnsWrapper>
             <Box>
               <h1>Thanks for your order!</h1>
-              <p>We will email you when your order will be sent.</p>
+              <p>We will email you on your given email address.</p>
             </Box>
           </ColumnsWrapper>
         </Center>
       </>
     );
   }
+
   return (
     <>
       <Header />
@@ -189,17 +203,20 @@ export default function CartPage() {
                      placeholder="Name"
                      value={name}
                      name="name"
+                     required
                      onChange={ev => setName(ev.target.value)} />
               <Input type="text"
                      placeholder="Email"
                      value={email}
                      name="email"
+                     required
                      onChange={ev => setEmail(ev.target.value)}/>
               <CityHolder>
                 <Input type="text"
                        placeholder="City"
                        value={city}
                        name="city"
+                       required
                        onChange={ev => setCity(ev.target.value)}/>
                 <Input type="text"
                        placeholder="Postal Code"
@@ -218,8 +235,8 @@ export default function CartPage() {
                      name="country"
                      onChange={ev => setCountry(ev.target.value)}/>
               <Button black block
-                      onClick={goToPayment}>
-                Continue to payment
+                      onClick={submitOrder}>
+                Order
               </Button>
             </Box>
           )}

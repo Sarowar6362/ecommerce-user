@@ -12,6 +12,7 @@ const CategoriesRow = styled.div`
   gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
+  text-decoration:none;
 `;
 
 // Styled component for the category box

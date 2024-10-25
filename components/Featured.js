@@ -14,11 +14,12 @@ const Bg = styled.div`
 const Title = styled.h1`
   margin:0;
   font-weight:normal;
-  font-size:1.5rem;
+  font-size:1.2rem;
   @media screen and (min-width: 768px) {
-    font-size:3rem;
+    font-size:2rem;
   }
 `;
+
 const Desc = styled.p`
   color:#aaa;
   font-size:.96rem;
@@ -73,14 +74,16 @@ export default function Featured({product}) {
         <Desc>{product.description}</Desc>
       
       </>
-    ) : (
-      <p>Welcome to our website</p> // Or handle the case when `product` is not available
+    ) : (<>
+    
+      <Title>Welcome to our</Title> <Title>website</Title>
+      </>
     )}
   </div>
 </Column>
 
           <Column>
-            <img src="https://storage.googleapis.com/ecommerce-3d38f.appspot.com/1729704306898.png" alt=""/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/ecommerce-3d38f.appspot.com/o/ss_transparent.png?alt=media&token=887a476d-26a0-4bfa-9461-8eac842410b5" alt=""/>
           </Column>
         </ColumnsWrapper>
       </Center>
