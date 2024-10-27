@@ -7,6 +7,8 @@ import BarsIcon from "@/components/icons/Bars";
 
 const StyledHeader = styled.header`
   background-color: #222;
+  width: 100%; /* Ensures full width */
+  overflow-x: hidden; /* Prevents horizontal overflow */
 `;
 const Logo = styled(Link)`
   color:#fff;
@@ -21,11 +23,11 @@ const Wrapper = styled.div`
   padding: 20px 0;
 `;
 const StyledNav = styled.nav`
-  ${props => props.mobilenavactive ? `
+  ${({ mobilenavactive }) => (mobilenavactive ? `
     display: block;
   ` : `
     display: none;
-  `}
+  `)}
   gap: 15px;
   position: fixed;
   top: 0;
@@ -34,10 +36,13 @@ const StyledNav = styled.nav`
   right: 0;
   padding: 70px 20px 20px;
   background-color: #222;
+  overflow-y: auto; /* Allows scrolling if the content exceeds viewport height */
+  
   @media screen and (min-width: 768px) {
     display: flex;
     position: static;
     padding: 0;
+    overflow-y: visible; /* Reset overflow for larger screens */
   }
 `;
 const NavLink = styled(Link)`

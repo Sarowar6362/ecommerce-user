@@ -33,11 +33,11 @@ const ProductImageBox = styled.div`
   height: 100px;
   padding: 2px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  img{
+  img {
     max-width: 60px;
     max-height: 60px;
   }
@@ -45,7 +45,7 @@ const ProductImageBox = styled.div`
     padding: 10px;
     width: 100px;
     height: 100px;
-    img{
+    img {
       max-width: 80px;
       max-height: 80px;
     }
@@ -62,27 +62,25 @@ const QuantityLabel = styled.span`
 `;
 
 const CityHolder = styled.div`
-  display:flex;
+  display: flex;
   gap: 5px;
 `;
 
 export default function CartPage() {
-  const {cartProducts,addProduct,removeProduct,clearCart} = useContext(CartContext);
-  const [products,setProducts] = useState([]);
-  const [name,setName] = useState('');
-  const [email,setEmail] = useState('');
-  const [city,setCity] = useState('');
+  const {cartProducts, addProduct, removeProduct, clearCart} = useContext(CartContext);
+  const [products, setProducts] = useState([]);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [postalCode,setPostalCode] = useState('');
-  const [streetAddress,setStreetAddress] = useState('');
-  const [country,setCountry] = useState('');
-  const [isSuccess,setIsSuccess] = useState(false);
+  const [streetAddress, setStreetAddress] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (cartProducts.length > 0) {
-      axios.post('/api/cart', {ids:cartProducts})
+      axios.post('/api/cart', {ids: cartProducts})
         .then(response => {
           setProducts(response.data);
-        })
+        });
     } else {
       setProducts([]);
     }
@@ -91,28 +89,48 @@ export default function CartPage() {
   function moreOfThisProduct(id) {
     addProduct(id);
   }
+
   function lessOfThisProduct(id) {
     removeProduct(id);
   }
 
-  // Updated `submitOrder` function
+  // Email validation function
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+    return regex.test(email);
+  };
+
+  // Phone number validation function for Bangladesh
+  const validatePhoneNumber = (postalCode) => {
+    const regex = /^(013|014|015|016|017|018|019)\d{8}$/;
+    return regex.test(postalCode);
+  };
+
+  // Submit order with validation
   async function submitOrder() {
+    if (!validateEmail(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (!validatePhoneNumber(postalCode)) {
+      alert("Please enter a valid Bangladeshi phone number (e.g., 017xxxxxxxx).");
+      return;
+    }
+
     try {
       const response = await axios.post('/api/orders', {
         name,
         email,
-        city,
         postalCode,
         streetAddress,
-        country,
         line_items: products.map(product => ({
           product_id: product._id,
-          title: product.title, //title changed here
+          title: product.title,
           quantity: cartProducts.filter(id => id === product._id).length,
         })),
-        paid: false // Since we're not including a payment method
+        paid: false,
       });
-      
+
       if (response.status === 201) {
         setIsSuccess(true);
         clearCart();
@@ -128,7 +146,6 @@ export default function CartPage() {
     total += price;
   }
 
-  // Display a thank-you message if order submission is successful
   if (isSuccess) {
     return (
       <>
@@ -152,9 +169,7 @@ export default function CartPage() {
         <ColumnsWrapper>
           <Box>
             <h2>Cart</h2>
-            {!cartProducts?.length && (
-              <div>Your cart is empty</div>
-            )}
+            {!cartProducts?.length && <div>Your cart is empty</div>}
             {products?.length > 0 && (
               <Table>
                 <thead>
@@ -174,13 +189,11 @@ export default function CartPage() {
                         {product.title}
                       </ProductInfoCell>
                       <td>
-                        <Button
-                          onClick={() => lessOfThisProduct(product._id)}>-</Button>
+                        <Button onClick={() => lessOfThisProduct(product._id)}>-</Button>
                         <QuantityLabel>
                           {cartProducts.filter(id => id === product._id).length}
                         </QuantityLabel>
-                        <Button
-                          onClick={() => moreOfThisProduct(product._id)}>+</Button>
+                        <Button onClick={() => moreOfThisProduct(product._id)}>+</Button>
                       </td>
                       <td>
                         ${cartProducts.filter(id => id === product._id).length * product.price}
@@ -198,44 +211,33 @@ export default function CartPage() {
           </Box>
           {!!cartProducts?.length && (
             <Box>
-              <h2>Order information</h2>
+              <h2>Order Information</h2>
               <Input type="text"
                      placeholder="Name"
                      value={name}
                      name="name"
                      required
                      onChange={ev => setName(ev.target.value)} />
-              <Input type="text"
+              <Input type="email"
                      placeholder="Email"
                      value={email}
                      name="email"
                      required
-                     onChange={ev => setEmail(ev.target.value)}/>
+                     onChange={ev => setEmail(ev.target.value)} />
               <CityHolder>
                 <Input type="text"
-                       placeholder="City"
-                       value={city}
-                       name="city"
-                       required
-                       onChange={ev => setCity(ev.target.value)}/>
-                <Input type="text"
-                       placeholder="Postal Code"
+                       placeholder="Phone Number (e.g., 017xxxxxxxx)"
                        value={postalCode}
-                       name="postalCode"
-                       onChange={ev => setPostalCode(ev.target.value)}/>
+                       name="phoneNumber"
+                       required
+                       onChange={ev => setPostalCode(ev.target.value)} />
               </CityHolder>
               <Input type="text"
                      placeholder="Street Address"
                      value={streetAddress}
                      name="streetAddress"
-                     onChange={ev => setStreetAddress(ev.target.value)}/>
-              <Input type="text"
-                     placeholder="Country"
-                     value={country}
-                     name="country"
-                     onChange={ev => setCountry(ev.target.value)}/>
-              <Button black block
-                      onClick={submitOrder}>
+                     onChange={ev => setStreetAddress(ev.target.value)} />
+              <Button black block onClick={submitOrder}>
                 Order
               </Button>
             </Box>
