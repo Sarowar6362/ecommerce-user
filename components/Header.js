@@ -6,12 +6,12 @@ import {CartContext} from "@/components/CartContext";
 import BarsIcon from "@/components/icons/Bars";
 
 const StyledHeader = styled.header`
-  background-color: #222;
+  background-color: #f7674a;
   width: 100%; /* Ensures full width */
   overflow-x: hidden; /* Prevents horizontal overflow */
 `;
 const Logo = styled(Link)`
-  color:#fff;
+  color: white;
   text-decoration:none;
   position: relative;
   z-index: 3;
@@ -35,7 +35,7 @@ const StyledNav = styled.nav`
   left: 0;
   right: 0;
   padding: 70px 20px 20px;
-  background-color: #222;
+  background-color: #f7674a;
   overflow-y: auto; /* Allows scrolling if the content exceeds viewport height */
   
   @media screen and (min-width: 768px) {
@@ -47,7 +47,7 @@ const StyledNav = styled.nav`
 `;
 const NavLink = styled(Link)`
   display: block;
-  color:#aaa;
+  color: white;
   text-decoration:none;
   padding: 10px 0;
   @media screen and (min-width: 768px) {
@@ -59,7 +59,7 @@ const NavButton = styled.button`
   width: 30px;
   height: 30px;
   border:0;
-  color: white;
+  color: black;
   cursor: pointer;
   position: relative;
   z-index: 3;
