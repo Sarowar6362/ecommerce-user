@@ -86,7 +86,7 @@ export default function Featured({product}) {
 </Column>
 
           <Column>
-            <img src="https://firebasestorage.googleapis.com/v0/b/ecommerce-3d38f.appspot.com/o/ss_transparent.png?alt=media&token=887a476d-26a0-4bfa-9461-8eac842410b5" alt=""/>
+            <img src="https://firebasestorage.googleapis.com/v0/b/ecommerce-cc39b.appspot.com/o/abdullah1.png?alt=media&token=4f46a63d-6129-4885-a82d-534270897b30" alt=""/>
           </Column>
         </ColumnsWrapper>
       </Center>
