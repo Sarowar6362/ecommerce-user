@@ -10,6 +10,9 @@ const Bg = styled.div`
   background-color: #f7674a;
   color: white;
   padding: 50px 0;
+  width: 100%;
+  overflow: hidden;   
+  box-sizing: border-box; 
 `;
 const Title = styled.h1`
   margin:0;
